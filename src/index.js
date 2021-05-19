@@ -15,7 +15,7 @@ app.post("/account", (req, res) => {
         (customer) => customer.cpf === cpf
     );
 
-    if (accountAlreadyExist) {
+    if (accountAlreadyExists) {
         return res.status(400).json({
             error: "The account already exists."
         });
