@@ -128,4 +128,20 @@ app.get("/accounts", (req, res) => {
 	return res.json(customer);
 });
 
+app.delete("/accounts", (req, res) => {
+	const { customer } = req;
+
+	customers.splice(customers.indexOf(customer), 1);
+
+	return res.status(200).json(customers);
+});
+
+app.get("/balance", (req, res) => {
+	const { customer } = req;
+
+	const balance = getBalance(customer.statement);
+
+	return res.json(balance);
+});
+
 app.listen(3333);
