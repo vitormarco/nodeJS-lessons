@@ -85,8 +85,6 @@ app.post("/withdraw", (req, res) => {
 
 	const balance = getBalance(customer.statement);
 
-	console.log(balance);
-
 	if (balance < amount) {
 		return res.status(400).json({
 			error: "You don't have sufficient funds"
