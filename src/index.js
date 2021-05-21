@@ -1,3 +1,4 @@
+const { response } = require("express");
 const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 
@@ -19,6 +20,16 @@ function verifyIfExistsAccountCPF(req, res, next) {
 	req.customer = customer;
 
 	return next();
+}
+
+function getBalance(statement) {
+	return statement.reduce((acc, operation) => {
+		if (operation.type === "credit") {
+			return acc + operation.amount;
+		} else {
+			return acc - operation.amount;
+		}
+	}, 0);
 }
 
 app.post("/accounts", (req, res) => {
@@ -63,6 +74,30 @@ app.post("/deposits", (req, res) => {
 		created_at: new Date(),
 		type: "credit",
 	}
+
+	customer.statement.push(statementOperation);
+
+	return res.status(201).send();
+});
+
+app.post("/withdraw", (req, res) => {
+	const { customer, body: { amount } } = req;
+
+	const balance = getBalance(customer.statement);
+
+	console.log(balance);
+
+	if (balance < amount) {
+		return res.status(400).json({
+			error: "You don't have sufficient funds"
+		});
+	}
+
+	const statementOperation = {
+		amount,
+		created_at: new Date(),
+		type: "debit",
+	};
 
 	customer.statement.push(statementOperation);
 
